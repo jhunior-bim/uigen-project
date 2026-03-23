@@ -1,7 +1,7 @@
 "use server";
 
 import { getSession } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { projects } from "@/lib/db";
 
 interface CreateProjectInput {
   name: string;
@@ -11,18 +11,16 @@ interface CreateProjectInput {
 
 export async function createProject(input: CreateProjectInput) {
   const session = await getSession();
-  
+
   if (!session) {
     throw new Error("Unauthorized");
   }
 
-  const project = await prisma.project.create({
-    data: {
-      name: input.name,
-      userId: session.userId,
-      messages: JSON.stringify(input.messages),
-      data: JSON.stringify(input.data),
-    },
+  const project = projects.create({
+    name: input.name,
+    userId: session.userId,
+    messages: JSON.stringify(input.messages),
+    data: JSON.stringify(input.data),
   });
 
   return project;

@@ -1,7 +1,7 @@
 "use server";
 
 import bcrypt from "bcrypt";
-import { prisma } from "@/lib/prisma";
+import { users } from "@/lib/db";
 import { createSession, deleteSession, getSession } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -29,9 +29,7 @@ export async function signUp(
     }
 
     // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email },
-    });
+    const existingUser = users.findByEmail(email);
 
     if (existingUser) {
       return { success: false, error: "Email already registered" };
@@ -41,12 +39,7 @@ export async function signUp(
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create user
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-      },
-    });
+    const user = users.create(email, hashedPassword);
 
     // Create session
     await createSession(user.id, user.email);
@@ -70,9 +63,7 @@ export async function signIn(
     }
 
     // Find user
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const user = users.findByEmail(email);
 
     if (!user) {
       return { success: false, error: "Invalid credentials" };
@@ -110,16 +101,7 @@ export async function getUser() {
   }
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: session.userId },
-      select: {
-        id: true,
-        email: true,
-        createdAt: true,
-      },
-    });
-
-    return user;
+    return users.findById(session.userId);
   } catch (error) {
     console.error("Get user error:", error);
     return null;

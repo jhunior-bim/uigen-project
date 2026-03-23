@@ -1,9 +1,2 @@
-import { PrismaClient } from "@/generated/prisma";
-
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
-
-export const prisma = globalForPrisma.prisma ?? new PrismaClient();
-
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+// This file is kept for compatibility. Use @/lib/db instead.
+export { db, users, projects } from "@/lib/db";

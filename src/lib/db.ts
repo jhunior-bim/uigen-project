@@ -2,7 +2,8 @@ import Database from "better-sqlite3";
 import path from "path";
 import crypto from "crypto";
 
-const DB_PATH = path.join(process.cwd(), "prisma", "dev.db");
+const dbUrl = process.env.DATABASE_URL?.replace("file:", "") ?? "./prisma/dev.db";
+const DB_PATH = path.isAbsolute(dbUrl) ? dbUrl : path.join(process.cwd(), "prisma", dbUrl.replace(/^\.\//, ""));
 
 const globalForDb = globalThis as unknown as {
   db: Database.Database | undefined;

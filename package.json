@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "dev:daemon": "next dev --turbopack > logs.txt 2>&1",
+    "dev:daemon": "next dev --turbopack > logs.txt 2>&1 &",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
